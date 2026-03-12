@@ -1,20 +1,20 @@
 ---
-import Layout from '../layouts/Layout.astro'
-import CaseCard from '../components/CaseCard.astro'
-import RankingTable from '../components/RankingTable.astro'
-import { getCases, getRankings } from '../lib/api'
-import { getLangFromUrl, useTranslations } from '../i18n'
+import Layout from '../../layouts/Layout.astro'
+import CaseCard from '../../components/CaseCard.astro'
+import RankingTable from '../../components/RankingTable.astro'
+import { getCases, getRankings } from '../../lib/api'
+import { getLangFromUrl, useTranslations } from '../../i18n'
 
 const lang = getLangFromUrl(Astro.url)
 const t = useTranslations(lang)
-const base = lang === 'en' ? '/en' : ''
+const base = '/en'
 
 const [{ cases }, rankings] = await Promise.all([
   getCases({ limit: '6' }),
   getRankings()
 ])
 ---
-<Layout title={`AI PRISON — ${lang === 'zh' ? '首页' : 'Home'}`}>
+<Layout title="AI PRISON — Home">
   <section class="text-center py-16 border-b border-prison-border mb-12">
     <div class="text-prison-muted text-xs tracking-widest mb-4">{t.home_classified}</div>
     <h1 class="text-5xl font-bold text-prison-green tracking-widest mb-4 animate-flicker">
@@ -22,8 +22,8 @@ const [{ cases }, rankings] = await Promise.all([
     </h1>
     <p class="text-prison-muted max-w-xl mx-auto">{t.home_subtitle}</p>
     <div class="flex gap-4 justify-center mt-8">
-      <a href={`${base}/cases`} class="prison-btn-green">{t.home_browse_cases}</a>
-      <a href={`${base}/submit`} class="prison-btn border-prison-muted text-prison-muted hover:border-prison-text hover:text-prison-text">
+      <a href="/en/cases" class="prison-btn-green">{t.home_browse_cases}</a>
+      <a href="/en/submit" class="prison-btn border-prison-muted text-prison-muted hover:border-prison-text hover:text-prison-text">
         {t.home_report}
       </a>
     </div>
@@ -35,7 +35,7 @@ const [{ cases }, rankings] = await Promise.all([
       <div class="space-y-3">
         {cases.map(c => <CaseCard case={c} lang={lang} base={base} />)}
       </div>
-      <a href={`${base}/cases`} class="block text-center text-prison-muted text-xs mt-6 hover:text-prison-green">
+      <a href="/en/cases" class="block text-center text-prison-muted text-xs mt-6 hover:text-prison-green">
         {t.home_view_all}
       </a>
     </div>
@@ -44,7 +44,7 @@ const [{ cases }, rankings] = await Promise.all([
       <h2 class="text-prison-red text-xs tracking-widest mb-4">{t.home_most_wanted}</h2>
       <div class="prison-card">
         <RankingTable models={rankings} limit={5} lang={lang} />
-        <a href={`${base}/rankings`} class="block text-center text-prison-muted text-xs mt-4 hover:text-prison-green">
+        <a href="/en/rankings" class="block text-center text-prison-muted text-xs mt-4 hover:text-prison-green">
           {t.home_full_rankings}
         </a>
       </div>

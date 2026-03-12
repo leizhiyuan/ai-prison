@@ -1,20 +1,20 @@
 ---
-import Layout from '../layouts/Layout.astro'
-import { getRankings } from '../lib/api'
-import { getLangFromUrl, useTranslations, getSeverityLabel } from '../i18n'
+import Layout from '../../layouts/Layout.astro'
+import { getRankings } from '../../lib/api'
+import { getLangFromUrl, useTranslations } from '../../i18n'
 
 const lang = getLangFromUrl(Astro.url)
 const t = useTranslations(lang)
 
 const rankings = await getRankings()
 ---
-<Layout title={`${lang === 'zh' ? '排行榜' : 'Rankings'} — AI PRISON`}>
+<Layout title="Rankings — AI PRISON">
   <h1 class="text-prison-red text-xs tracking-widest mb-2">{t.rankings_title}</h1>
   <p class="text-prison-muted text-xs mb-8">{t.rankings_subtitle}</p>
 
   <div class="space-y-2">
     {rankings.map((m, i) => {
-      const name = lang === 'zh' ? m.name : (m.name_en || m.name)
+      const name = m.name_en || m.name
       const avg = m.total_cases > 0 ? Math.round(m.total_severity / m.total_cases) : 0
       return (
         <div class={`prison-card flex items-center gap-4 ${i === 0 ? 'border-prison-red' : ''}`}>

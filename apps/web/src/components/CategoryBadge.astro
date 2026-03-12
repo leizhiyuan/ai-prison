@@ -1,9 +1,9 @@
 ---
-import { CATEGORY_LABELS } from '../lib/api'
-export interface Props { category: string }
-const { category } = Astro.props
-const label = CATEGORY_LABELS[category] || { zh: category, en: category }
+import { getCategoryLabel, type Lang } from '../i18n'
+export interface Props { category: string; lang: Lang }
+const { category, lang } = Astro.props
+const label = getCategoryLabel(lang, category)
 ---
 <span class="inline-block border border-prison-muted text-prison-muted text-xs px-2 py-0.5">
-  {label.zh} / {label.en}
+  {label}
 </span>

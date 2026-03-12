@@ -1,11 +1,11 @@
 ---
-import { SEVERITY_LABELS } from '../lib/api'
-export interface Props { severity: number; showBar?: boolean }
-const { severity, showBar = false } = Astro.props
-const label = SEVERITY_LABELS[severity]
+import { getSeverityLabel, type Lang } from '../i18n'
+export interface Props { severity: number; showBar?: boolean; lang: Lang }
+const { severity, showBar = false, lang } = Astro.props
+const { label, color } = getSeverityLabel(lang, severity)
 ---
-<span class={`severity-badge border ${label.color} border-current`}>
-  {label.zh}
+<span class={`severity-badge border ${color} border-current`}>
+  {label}
 </span>
 {showBar && (
   <div class="flex gap-0.5 mt-1">

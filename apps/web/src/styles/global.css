@@ -19,9 +19,6 @@
   }
 }
 
-/* Language switching */
-[data-lang="en"] .zh { display: none !important; }
-[data-lang="zh"] .en { display: none !important; }
 
 @layer components {
   .prison-card {

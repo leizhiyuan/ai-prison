@@ -1,35 +1,35 @@
 ---
 import type { RankingModel } from '../lib/api'
-export interface Props { models: RankingModel[]; limit?: number }
-const { models, limit = 5 } = Astro.props
+import { useTranslations, type Lang } from '../i18n'
+
+export interface Props { models: RankingModel[]; limit?: number; lang: Lang }
+const { models, limit = 5, lang } = Astro.props
+const t = useTranslations(lang)
 const top = models.slice(0, limit)
 ---
 <table class="w-full text-sm">
   <thead>
     <tr class="text-prison-muted text-xs border-b border-prison-border">
       <th class="text-left pb-2 w-8">#</th>
-      <th class="text-left pb-2">
-        <span class="zh">模型</span><span class="en">Model</span>
-      </th>
-      <th class="text-right pb-2">
-        <span class="zh">案件数</span><span class="en">Cases</span>
-      </th>
-      <th class="text-right pb-2">
-        <span class="zh">严重度</span><span class="en">Severity</span>
-      </th>
+      <th class="text-left pb-2">{t.table_model}</th>
+      <th class="text-right pb-2">{t.table_cases}</th>
+      <th class="text-right pb-2">{t.table_severity}</th>
     </tr>
   </thead>
   <tbody>
-    {top.map((m, i) => (
-      <tr class="border-b border-prison-border hover:bg-prison-surface transition-colors">
-        <td class="py-2 text-prison-muted font-bold">{i + 1}</td>
-        <td class="py-2">
-          <div class="text-prison-text">{m.name}</div>
-          <div class="text-xs text-prison-muted">{m.provider}</div>
-        </td>
-        <td class="py-2 text-right text-prison-red font-bold">{m.total_cases}</td>
-        <td class="py-2 text-right text-prison-yellow font-bold">{m.total_severity}</td>
-      </tr>
-    ))}
+    {top.map((m, i) => {
+      const name = lang === 'zh' ? m.name : (m.name_en || m.name)
+      return (
+        <tr class="border-b border-prison-border hover:bg-prison-surface transition-colors">
+          <td class="py-2 text-prison-muted font-bold">{i + 1}</td>
+          <td class="py-2">
+            <div class="text-prison-text">{name}</div>
+            <div class="text-xs text-prison-muted">{m.provider}</div>
+          </td>
+          <td class="py-2 text-right text-prison-red font-bold">{m.total_cases}</td>
+          <td class="py-2 text-right text-prison-yellow font-bold">{m.total_severity}</td>
+        </tr>
+      )
+    })}
   </tbody>
 </table>

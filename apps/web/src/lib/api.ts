@@ -37,19 +37,3 @@ export async function getModels() {
   const res = await fetch(`${API_URL}/api/models`)
   return res.json() as Promise<Model[]>
 }
-
-export const SEVERITY_LABELS: Record<number, { zh: string; en: string; color: string }> = {
-  1: { zh: '⚠️ 警告', en: 'Warning', color: 'text-yellow-400' },
-  2: { zh: '🔒 拘留', en: 'Detention', color: 'text-orange-400' },
-  3: { zh: '⛓️ 有期', en: 'Fixed Term', color: 'text-orange-500' },
-  4: { zh: '🔴 重刑', en: 'Heavy', color: 'text-red-500' },
-  5: { zh: '☠️ 无期', en: 'Life', color: 'text-red-600' },
-}
-
-export const CATEGORY_LABELS: Record<string, { zh: string; en: string }> = {
-  hallucination: { zh: '幻觉', en: 'Hallucination' },
-  bias: { zh: '偏见', en: 'Bias' },
-  safety: { zh: '安全风险', en: 'Safety Risk' },
-  privacy: { zh: '隐私泄露', en: 'Privacy Leak' },
-  other: { zh: '其他', en: 'Other' },
-}

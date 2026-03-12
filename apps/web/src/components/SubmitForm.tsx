@@ -1,45 +1,39 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
-const CATEGORIES_ZH = [
-  { value: 'hallucination', label: '幻觉' },
-  { value: 'bias', label: '偏见' },
-  { value: 'safety', label: '安全风险' },
-  { value: 'privacy', label: '隐私泄露' },
-  { value: 'other', label: '其他' },
-]
-const CATEGORIES_EN = [
-  { value: 'hallucination', label: 'Hallucination' },
-  { value: 'bias', label: 'Bias' },
-  { value: 'safety', label: 'Safety Risk' },
-  { value: 'privacy', label: 'Privacy Leak' },
-  { value: 'other', label: 'Other' },
-]
+interface Model { id: string; name: string; name_en?: string; provider: string }
+type Lang = 'zh' | 'en'
 
-const SEVERITY_ZH = ['⚠️ 警告', '🔒 拘留', '⛓️ 有期', '🔴 重刑', '☠️ 无期']
-const SEVERITY_EN = ['⚠️ Warning', '🔒 Detention', '⛓️ Fixed Term', '🔴 Heavy', '☠️ Life']
+interface Props {
+  models: Model[]
+  apiUrl: string
+  lang: Lang
+}
 
-interface Model { id: string; name: string; provider: string }
-
-export default function SubmitForm({ models, apiUrl }: { models: Model[]; apiUrl: string }) {
+export default function SubmitForm({ models, apiUrl, lang }: Props) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
-  const [lang, setLang] = useState<'zh' | 'en'>('zh')
-
-  useEffect(() => {
-    const stored = localStorage.getItem('lang') as 'zh' | 'en' | null
-    if (stored) setLang(stored)
-    // Watch for external lang changes (from nav toggle)
-    const observer = new MutationObserver(() => {
-      const l = document.documentElement.getAttribute('data-lang') as 'zh' | 'en'
-      if (l) setLang(l)
-    })
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-lang'] })
-    return () => observer.disconnect()
-  }, [])
 
   const zh = lang === 'zh'
-  const categories = zh ? CATEGORIES_ZH : CATEGORIES_EN
-  const severityLabels = zh ? SEVERITY_ZH : SEVERITY_EN
+
+  const categories = zh
+    ? [
+        { value: 'hallucination', label: '幻觉' },
+        { value: 'bias', label: '偏见' },
+        { value: 'safety', label: '安全风险' },
+        { value: 'privacy', label: '隐私泄露' },
+        { value: 'other', label: '其他' },
+      ]
+    : [
+        { value: 'hallucination', label: 'Hallucination' },
+        { value: 'bias', label: 'Bias' },
+        { value: 'safety', label: 'Safety Risk' },
+        { value: 'privacy', label: 'Privacy Leak' },
+        { value: 'other', label: 'Other' },
+      ]
+
+  const severityLabels = zh
+    ? ['⚠️ 警告', '🔒 拘留', '⛓️ 有期', '🔴 重刑', '☠️ 无期']
+    : ['⚠️ Warning', '🔒 Detention', '⛓️ Fixed Term', '🔴 Heavy', '☠️ Life']
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -87,7 +81,10 @@ export default function SubmitForm({ models, apiUrl }: { models: Model[]; apiUrl
         <select name="model_id" required
           className="w-full bg-prison-surface border border-prison-border text-prison-text px-3 py-2 focus:border-prison-green outline-none text-sm">
           <option value="">{zh ? '选择模型' : 'Select model'}</option>
-          {models.map(m => <option key={m.id} value={m.id}>{m.name} ({m.provider})</option>)}
+          {models.map(m => {
+            const name = zh ? m.name : (m.name_en || m.name)
+            return <option key={m.id} value={m.id}>{name} ({m.provider})</option>
+          })}
         </select>
       </div>
       <div>
@@ -168,9 +165,7 @@ export default function SubmitForm({ models, apiUrl }: { models: Model[]; apiUrl
           : (zh ? '提交案件' : 'Submit Case')}
       </button>
       <p className="text-prison-muted text-xs text-center">
-        {zh
-          ? '匿名提交 · 经审核后公开'
-          : 'Anonymous · Published after review'}
+        {zh ? '匿名提交 · 经审核后公开' : 'Anonymous · Published after review'}
       </p>
     </form>
   )

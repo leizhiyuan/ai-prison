@@ -1,22 +1,21 @@
 ---
-import Layout from '../../layouts/Layout.astro'
-import SeverityBadge from '../../components/SeverityBadge.astro'
-import CategoryBadge from '../../components/CategoryBadge.astro'
-import { getCase } from '../../lib/api'
-import { getLangFromUrl, useTranslations } from '../../i18n'
+import Layout from '../../../layouts/Layout.astro'
+import SeverityBadge from '../../../components/SeverityBadge.astro'
+import CategoryBadge from '../../../components/CategoryBadge.astro'
+import { getCase } from '../../../lib/api'
+import { getLangFromUrl, useTranslations } from '../../../i18n'
 
 const lang = getLangFromUrl(Astro.url)
 const t = useTranslations(lang)
-const base = lang === 'en' ? '/en' : ''
 
 const { id } = Astro.params
 const c = await getCase(id!)
-if (!c) return Astro.redirect(`${base}/cases`)
+if (!c) return Astro.redirect('/en/cases')
 
-const title = lang === 'zh' ? c.title : (c.title_en || c.title)
-const titleAlt = lang === 'zh' ? c.title_en : c.title
-const description = lang === 'zh' ? c.description : (c.description_en || c.description)
-const modelName = lang === 'zh' ? c.model_name : (c.model_name_en || c.model_name)
+const title = c.title_en || c.title
+const titleAlt = c.title
+const description = c.description_en || c.description
+const modelName = c.model_name_en || c.model_name
 
 const date = new Date(c.created_at * 1000).toLocaleDateString(
   t.case_date_locale,
@@ -25,7 +24,7 @@ const date = new Date(c.created_at * 1000).toLocaleDateString(
 ---
 <Layout title={`${title} — AI PRISON`}>
   <div class="max-w-3xl mx-auto">
-    <a href={`${base}/cases`} class="text-prison-muted text-xs hover:text-prison-green mb-6 block">
+    <a href="/en/cases" class="text-prison-muted text-xs hover:text-prison-green mb-6 block">
       {t.case_back}
     </a>
 

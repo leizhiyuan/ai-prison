@@ -2,31 +2,35 @@
 import type { Case } from '../lib/api'
 import SeverityBadge from './SeverityBadge.astro'
 import CategoryBadge from './CategoryBadge.astro'
-export interface Props { case: Case }
-const { case: c } = Astro.props
-const dateZh = new Date(c.created_at * 1000).toLocaleDateString('zh-CN')
-const dateEn = new Date(c.created_at * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+import { type Lang } from '../i18n'
+
+export interface Props { case: Case; lang: Lang; base: string }
+const { case: c, lang, base } = Astro.props
+
+const date = new Date(c.created_at * 1000).toLocaleDateString(
+  lang === 'zh' ? 'zh-CN' : 'en-US',
+  lang === 'en' ? { month: 'short', day: 'numeric', year: 'numeric' } : undefined
+)
+const title = lang === 'zh' ? c.title : (c.title_en || c.title)
+const description = lang === 'zh' ? c.description : (c.description_en || c.description)
+const modelName = lang === 'zh' ? c.model_name : (c.model_name_en || c.model_name)
 ---
-<a href={`/cases/${c.id}`} class="prison-card block group">
+<a href={`${base}/cases/${c.id}`} class="prison-card block group">
   <div class="flex items-start justify-between gap-4 mb-2">
     <div class="flex-1">
       <div class="text-xs text-prison-muted mb-1">
-        {c.model_name} ·
-        <span class="zh">{dateZh}</span>
-        <span class="en">{dateEn}</span>
+        {modelName} · {date}
       </div>
       <h3 class="text-prison-text group-hover:text-prison-green transition-colors font-bold">
-        <span class="zh">{c.title}</span>
-        <span class="en">{c.title_en}</span>
+        {title}
       </h3>
     </div>
     <div class="flex flex-col items-end gap-1 shrink-0">
-      <SeverityBadge severity={c.severity} />
-      <CategoryBadge category={c.category} />
+      <SeverityBadge severity={c.severity} lang={lang} />
+      <CategoryBadge category={c.category} lang={lang} />
     </div>
   </div>
   <p class="text-sm text-prison-muted line-clamp-2 mt-2">
-    <span class="zh">{c.description}</span>
-    <span class="en">{c.description_en}</span>
+    {description}
   </p>
 </a>

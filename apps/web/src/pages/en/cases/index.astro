@@ -1,12 +1,12 @@
 ---
-import Layout from '../../layouts/Layout.astro'
-import CaseCard from '../../components/CaseCard.astro'
-import { getCases, getModels } from '../../lib/api'
-import { getLangFromUrl, useTranslations, getCategoryLabel, CATEGORY_KEYS } from '../../i18n'
+import Layout from '../../../layouts/Layout.astro'
+import CaseCard from '../../../components/CaseCard.astro'
+import { getCases, getModels } from '../../../lib/api'
+import { getLangFromUrl, useTranslations, getCategoryLabel, CATEGORY_KEYS } from '../../../i18n'
 
 const lang = getLangFromUrl(Astro.url)
 const t = useTranslations(lang)
-const base = lang === 'en' ? '/en' : ''
+const base = '/en'
 
 const url = Astro.url
 const model = url.searchParams.get('model') || ''
@@ -25,7 +25,7 @@ const [{ cases, total }, models] = await Promise.all([
 ])
 const totalPages = Math.ceil(total / 20)
 ---
-<Layout title={`${lang === 'zh' ? '案例库' : 'Cases'} — AI PRISON`}>
+<Layout title="Cases — AI PRISON">
   <h1 class="text-prison-green text-xs tracking-widest mb-6">
     {t.cases_title}
     <span class="text-prison-muted ml-4">{t.cases_records(total)}</span>
@@ -50,7 +50,7 @@ const totalPages = Math.ceil(total / 20)
       {[1,2,3,4,5].map(s => <option value={s} selected={severity === String(s)}>Lv.{s}</option>)}
     </select>
     <button type="submit" class="prison-btn-green text-xs">{t.cases_filter_btn}</button>
-    <a href={`${base}/cases`} class="prison-btn border-prison-muted text-prison-muted hover:text-prison-text text-xs">{t.cases_reset_btn}</a>
+    <a href="/en/cases" class="prison-btn border-prison-muted text-prison-muted hover:text-prison-text text-xs">{t.cases_reset_btn}</a>
   </form>
 
   <div class="space-y-3">
@@ -64,7 +64,7 @@ const totalPages = Math.ceil(total / 20)
     <div class="flex gap-2 justify-center mt-8">
       {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
         <a
-          href={`${base}/cases?${new URLSearchParams({ ...params, page: String(p) })}`}
+          href={`/en/cases?${new URLSearchParams({ ...params, page: String(p) })}`}
           class={`prison-btn text-xs ${p === parseInt(page) ? 'border-prison-green text-prison-green' : 'border-prison-border text-prison-muted'}`}
         >{p}</a>
       ))}

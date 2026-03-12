@@ -1,0 +1,9 @@
+{
+  "name": "ai-prison",
+  "private": true,
+  "workspaces": ["apps/*"],
+  "scripts": {
+    "dev:worker": "cd apps/worker && npx wrangler dev --local",
+    "dev:web": "cd apps/web && npm run dev"
+  }
+}

@@ -1,0 +1,29 @@
+---
+import type { RankingModel } from '../lib/api'
+export interface Props { models: RankingModel[]; limit?: number }
+const { models, limit = 5 } = Astro.props
+const top = models.slice(0, limit)
+---
+<table class="w-full text-sm">
+  <thead>
+    <tr class="text-prison-muted text-xs border-b border-prison-border">
+      <th class="text-left pb-2 w-8">#</th>
+      <th class="text-left pb-2">模型 / Model</th>
+      <th class="text-right pb-2">案件数</th>
+      <th class="text-right pb-2">严重度</th>
+    </tr>
+  </thead>
+  <tbody>
+    {top.map((m, i) => (
+      <tr class="border-b border-prison-border hover:bg-prison-surface transition-colors">
+        <td class="py-2 text-prison-muted font-bold">{i + 1}</td>
+        <td class="py-2">
+          <div class="text-prison-text">{m.name}</div>
+          <div class="text-xs text-prison-muted">{m.provider}</div>
+        </td>
+        <td class="py-2 text-right text-prison-red font-bold">{m.total_cases}</td>
+        <td class="py-2 text-right text-prison-yellow font-bold">{m.total_severity}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>

@@ -6,4 +6,4 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "ai-prison-db"
-database_id = "placeholder-replace-after-create"
+database_id = "7f4c2a31-3c8e-4b2e-81bc-9000b56218a7"

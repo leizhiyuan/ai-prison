@@ -1,0 +1,80 @@
+---
+import Layout from '../layouts/Layout.astro'
+
+const apiUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:8787'
+---
+<Layout title="管理后台 — AI PRISON">
+  <div id="admin-app" data-api-url={apiUrl}>
+    <div id="login-form" class="max-w-sm mx-auto mt-16">
+      <h1 class="text-prison-red text-xs tracking-widest mb-6">⚠ 管理员入口 / ADMIN</h1>
+      <input id="token-input" type="password" placeholder="Admin Token"
+        class="w-full bg-prison-surface border border-prison-border text-prison-text px-3 py-2 focus:border-prison-green outline-none text-sm mb-3" />
+      <button id="login-btn" class="prison-btn-green w-full text-sm">登录</button>
+    </div>
+    <div id="pending-list" class="hidden">
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-prison-red text-xs tracking-widest">⚠ 待审核案件 / PENDING CASES</h1>
+        <button id="logout-btn" class="prison-btn border-prison-muted text-prison-muted text-xs">退出</button>
+      </div>
+      <div id="cases-container" class="space-y-3"></div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+const apiUrl = (document.getElementById('admin-app') as HTMLElement).dataset.apiUrl!
+let token = ''
+
+document.getElementById('login-btn')!.addEventListener('click', async () => {
+  token = (document.getElementById('token-input') as HTMLInputElement).value
+  await loadPending()
+})
+
+document.getElementById('logout-btn')!.addEventListener('click', () => {
+  token = ''
+  document.getElementById('login-form')!.classList.remove('hidden')
+  document.getElementById('pending-list')!.classList.add('hidden')
+})
+
+async function loadPending() {
+  const res = await fetch(`${apiUrl}/api/admin/pending`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  if (!res.ok) { alert('认证失败'); return }
+  const cases = await res.json() as Array<{id: string; model_name: string; category: string; severity: number; title: string; description: string; source_url?: string}>
+
+  document.getElementById('login-form')!.classList.add('hidden')
+  document.getElementById('pending-list')!.classList.remove('hidden')
+
+  const container = document.getElementById('cases-container')!
+  if (cases.length === 0) {
+    container.innerHTML = '<p class="text-prison-muted text-center py-8">暂无待审核案件</p>'
+    return
+  }
+  container.innerHTML = cases.map(c => `
+    <div class="prison-card" id="case-${c.id}">
+      <div class="text-xs text-prison-muted mb-1">${c.model_name} · ${c.category} · 严重度 ${c.severity}</div>
+      <div class="font-bold text-prison-text mb-1">${c.title}</div>
+      <p class="text-sm text-prison-muted mb-3">${c.description}</p>
+      ${c.source_url ? `<a href="${c.source_url}" target="_blank" class="text-prison-green text-xs hover:underline block mb-3">${c.source_url}</a>` : ''}
+      <div class="flex gap-2">
+        <button onclick="window.approveCase('${c.id}')" class="prison-btn-green text-xs">✓ 批准</button>
+        <button onclick="window.rejectCase('${c.id}')" class="prison-btn-red text-xs">✗ 拒绝</button>
+      </div>
+    </div>
+  `).join('')
+}
+
+async function approveCase(id: string) {
+  await fetch(`${apiUrl}/api/admin/approve/${id}`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } })
+  document.getElementById(`case-${id}`)?.remove()
+}
+
+async function rejectCase(id: string) {
+  await fetch(`${apiUrl}/api/admin/reject/${id}`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } })
+  document.getElementById(`case-${id}`)?.remove()
+}
+
+;(window as any).approveCase = approveCase
+;(window as any).rejectCase = rejectCase
+</script>

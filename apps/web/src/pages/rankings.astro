@@ -1,0 +1,45 @@
+---
+import Layout from '../layouts/Layout.astro'
+import { getRankings } from '../lib/api'
+
+const rankings = await getRankings()
+---
+<Layout title="排行榜 — AI PRISON">
+  <h1 class="text-prison-red text-xs tracking-widest mb-2">
+    ☠ 通缉令排行榜 / MOST WANTED
+  </h1>
+  <p class="text-prison-muted text-xs mb-8">按累计严重度得分排序</p>
+
+  <div class="space-y-2">
+    {rankings.map((m, i) => (
+      <div class={`prison-card flex items-center gap-4 ${i === 0 ? 'border-prison-red' : ''}`}>
+        <div class={`text-3xl font-bold w-12 text-center ${i === 0 ? 'text-prison-red' : i === 1 ? 'text-orange-400' : i === 2 ? 'text-yellow-600' : 'text-prison-muted'}`}>
+          #{i + 1}
+        </div>
+        <div class="flex-1">
+          <div class="flex items-center gap-3 flex-wrap">
+            <span class="font-bold text-prison-text">{m.name}</span>
+            <span class="text-xs text-prison-muted">{m.provider}</span>
+            {i === 0 && <span class="classified-stamp text-xs">头号通缉</span>}
+          </div>
+          <div class="flex gap-6 mt-1 text-xs text-prison-muted flex-wrap">
+            <span>案件数: <span class="text-prison-red font-bold">{m.total_cases}</span></span>
+            <span>严重度总分: <span class="text-prison-yellow font-bold">{m.total_severity}</span></span>
+            {m.life_sentences > 0 && (
+              <span>☠️ 无期: <span class="text-prison-red font-bold">{m.life_sentences}</span></span>
+            )}
+          </div>
+        </div>
+        <div class="text-right shrink-0">
+          <div class="text-xs text-prison-muted mb-1">平均严重度</div>
+          <div class="flex gap-0.5">
+            {[1,2,3,4,5].map(s => {
+              const avg = m.total_cases > 0 ? Math.round(m.total_severity / m.total_cases) : 0
+              return <div class={`h-2 w-3 ${s <= avg ? 'bg-prison-red' : 'bg-prison-border'}`}></div>
+            })}
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</Layout>

@@ -1,0 +1,9 @@
+---
+import { CATEGORY_LABELS } from '../lib/api'
+export interface Props { category: string }
+const { category } = Astro.props
+const label = CATEGORY_LABELS[category] || { zh: category, en: category }
+---
+<span class="inline-block border border-prison-muted text-prison-muted text-xs px-2 py-0.5">
+  {label.zh} / {label.en}
+</span>

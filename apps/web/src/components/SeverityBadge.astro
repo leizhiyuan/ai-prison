@@ -1,0 +1,16 @@
+---
+import { SEVERITY_LABELS } from '../lib/api'
+export interface Props { severity: number; showBar?: boolean }
+const { severity, showBar = false } = Astro.props
+const label = SEVERITY_LABELS[severity]
+---
+<span class={`severity-badge border ${label.color} border-current`}>
+  {label.zh}
+</span>
+{showBar && (
+  <div class="flex gap-0.5 mt-1">
+    {[1,2,3,4,5].map(i => (
+      <div class={`h-1.5 w-4 ${i <= severity ? 'bg-prison-red' : 'bg-prison-border'}`}></div>
+    ))}
+  </div>
+)}

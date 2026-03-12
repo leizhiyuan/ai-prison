@@ -19,6 +19,10 @@
   }
 }
 
+/* Language switching */
+[data-lang="en"] .zh { display: none !important; }
+[data-lang="zh"] .en { display: none !important; }
+
 @layer components {
   .prison-card {
     @apply bg-prison-surface border border-prison-border rounded-none p-4 hover:border-prison-green transition-colors duration-200;

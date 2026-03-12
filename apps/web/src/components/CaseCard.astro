@@ -4,18 +4,21 @@ import SeverityBadge from './SeverityBadge.astro'
 import CategoryBadge from './CategoryBadge.astro'
 export interface Props { case: Case }
 const { case: c } = Astro.props
-const date = new Date(c.created_at * 1000).toLocaleDateString('zh-CN')
+const dateZh = new Date(c.created_at * 1000).toLocaleDateString('zh-CN')
+const dateEn = new Date(c.created_at * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 ---
 <a href={`/cases/${c.id}`} class="prison-card block group">
   <div class="flex items-start justify-between gap-4 mb-2">
     <div class="flex-1">
       <div class="text-xs text-prison-muted mb-1">
-        {c.model_name} · {date}
+        {c.model_name} ·
+        <span class="zh">{dateZh}</span>
+        <span class="en">{dateEn}</span>
       </div>
       <h3 class="text-prison-text group-hover:text-prison-green transition-colors font-bold">
-        {c.title}
+        <span class="zh">{c.title}</span>
+        <span class="en">{c.title_en}</span>
       </h3>
-      <p class="text-xs text-prison-muted mt-0.5">{c.title_en}</p>
     </div>
     <div class="flex flex-col items-end gap-1 shrink-0">
       <SeverityBadge severity={c.severity} />
@@ -23,6 +26,7 @@ const date = new Date(c.created_at * 1000).toLocaleDateString('zh-CN')
     </div>
   </div>
   <p class="text-sm text-prison-muted line-clamp-2 mt-2">
-    {c.description}
+    <span class="zh">{c.description}</span>
+    <span class="en">{c.description_en}</span>
   </p>
 </a>

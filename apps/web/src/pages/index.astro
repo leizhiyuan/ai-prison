@@ -16,36 +16,44 @@ const [{ cases }, rankings] = await Promise.all([
       ⛓ AI PRISON
     </h1>
     <p class="text-prison-muted max-w-xl mx-auto">
-      收录各大 AI 模型失误案例，公开服刑记录。<br/>
-      <span class="text-xs">Documenting AI failures. Holding models accountable.</span>
+      <span class="zh">收录各大 AI 模型失误案例，公开服刑记录。</span>
+      <span class="en">Documenting AI failures. Holding models accountable.</span>
     </p>
     <div class="flex gap-4 justify-center mt-8">
-      <a href="/cases" class="prison-btn-green">查看案例库</a>
-      <a href="/submit" class="prison-btn border-prison-muted text-prison-muted hover:border-prison-text hover:text-prison-text">提交案件</a>
+      <a href="/cases" class="prison-btn-green">
+        <span class="zh">查看案例库</span><span class="en">Browse Cases</span>
+      </a>
+      <a href="/submit" class="prison-btn border-prison-muted text-prison-muted hover:border-prison-text hover:text-prison-text">
+        <span class="zh">提交案件</span><span class="en">Report Incident</span>
+      </a>
     </div>
   </section>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <div class="lg:col-span-2">
       <h2 class="text-prison-green text-xs tracking-widest mb-4">
-        ▶ 最新入狱记录 / LATEST INCIDENTS
+        <span class="zh">▶ 最新入狱记录</span>
+        <span class="en">▶ LATEST INCIDENTS</span>
       </h2>
       <div class="space-y-3">
         {cases.map(c => <CaseCard case={c} />)}
       </div>
       <a href="/cases" class="block text-center text-prison-muted text-xs mt-6 hover:text-prison-green">
-        查看全部案例 →
+        <span class="zh">查看全部案例 →</span>
+        <span class="en">View all cases →</span>
       </a>
     </div>
 
     <div>
       <h2 class="text-prison-red text-xs tracking-widest mb-4">
-        ▶ 通缉令排行榜 / MOST WANTED
+        <span class="zh">▶ 通缉令排行榜</span>
+        <span class="en">▶ MOST WANTED</span>
       </h2>
       <div class="prison-card">
         <RankingTable models={rankings} limit={5} />
         <a href="/rankings" class="block text-center text-prison-muted text-xs mt-4 hover:text-prison-green">
-          完整排行榜 →
+          <span class="zh">完整排行榜 →</span>
+          <span class="en">Full rankings →</span>
         </a>
       </div>
     </div>

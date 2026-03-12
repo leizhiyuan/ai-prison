@@ -4,11 +4,15 @@ import { getRankings } from '../lib/api'
 
 const rankings = await getRankings()
 ---
-<Layout title="排行榜 — AI PRISON">
+<Layout title="Rankings — AI PRISON">
   <h1 class="text-prison-red text-xs tracking-widest mb-2">
-    ☠ 通缉令排行榜 / MOST WANTED
+    <span class="zh">☠ 通缉令排行榜</span>
+    <span class="en">☠ MOST WANTED</span>
   </h1>
-  <p class="text-prison-muted text-xs mb-8">按累计严重度得分排序</p>
+  <p class="text-prison-muted text-xs mb-8">
+    <span class="zh">按累计严重度得分排序</span>
+    <span class="en">Ranked by cumulative severity score</span>
+  </p>
 
   <div class="space-y-2">
     {rankings.map((m, i) => (
@@ -20,18 +24,37 @@ const rankings = await getRankings()
           <div class="flex items-center gap-3 flex-wrap">
             <span class="font-bold text-prison-text">{m.name}</span>
             <span class="text-xs text-prison-muted">{m.provider}</span>
-            {i === 0 && <span class="classified-stamp text-xs">头号通缉</span>}
+            {i === 0 && (
+              <span class="classified-stamp text-xs">
+                <span class="zh">头号通缉</span>
+                <span class="en">TOP WANTED</span>
+              </span>
+            )}
           </div>
           <div class="flex gap-6 mt-1 text-xs text-prison-muted flex-wrap">
-            <span>案件数: <span class="text-prison-red font-bold">{m.total_cases}</span></span>
-            <span>严重度总分: <span class="text-prison-yellow font-bold">{m.total_severity}</span></span>
+            <span>
+              <span class="zh">案件数: </span>
+              <span class="en">Cases: </span>
+              <span class="text-prison-red font-bold">{m.total_cases}</span>
+            </span>
+            <span>
+              <span class="zh">严重度总分: </span>
+              <span class="en">Severity: </span>
+              <span class="text-prison-yellow font-bold">{m.total_severity}</span>
+            </span>
             {m.life_sentences > 0 && (
-              <span>☠️ 无期: <span class="text-prison-red font-bold">{m.life_sentences}</span></span>
+              <span>
+                ☠️ <span class="zh">无期: </span><span class="en">Life: </span>
+                <span class="text-prison-red font-bold">{m.life_sentences}</span>
+              </span>
             )}
           </div>
         </div>
         <div class="text-right shrink-0">
-          <div class="text-xs text-prison-muted mb-1">平均严重度</div>
+          <div class="text-xs text-prison-muted mb-1">
+            <span class="zh">平均严重度</span>
+            <span class="en">Avg severity</span>
+          </div>
           <div class="flex gap-0.5">
             {[1,2,3,4,5].map(s => {
               const avg = m.total_cases > 0 ? Math.round(m.total_severity / m.total_cases) : 0

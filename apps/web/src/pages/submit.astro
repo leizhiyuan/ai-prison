@@ -6,11 +6,15 @@ import { getModels } from '../lib/api'
 const models = await getModels()
 const apiUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:8787'
 ---
-<Layout title="提交案件 — AI PRISON">
+<Layout title="Submit — AI PRISON">
   <div class="max-w-2xl mx-auto">
-    <h1 class="text-prison-green text-xs tracking-widest mb-2">▶ 提交案件 / REPORT AN INCIDENT</h1>
+    <h1 class="text-prison-green text-xs tracking-widest mb-2">
+      <span class="zh">▶ 提交案件</span>
+      <span class="en">▶ REPORT AN INCIDENT</span>
+    </h1>
     <p class="text-prison-muted text-xs mb-8">
-      发现 AI 模型的失误？匿名提交，经审核后收录到案例库。
+      <span class="zh">发现 AI 模型的失误？匿名提交，经审核后收录到案例库。</span>
+      <span class="en">Spotted an AI failure? Submit anonymously. Published after review.</span>
     </p>
     <SubmitForm models={models} apiUrl={apiUrl} client:load />
   </div>

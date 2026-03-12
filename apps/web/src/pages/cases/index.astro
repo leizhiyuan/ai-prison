@@ -22,32 +22,43 @@ const totalPages = Math.ceil(total / 20)
 ---
 <Layout title="案例库 — AI PRISON">
   <h1 class="text-prison-green text-xs tracking-widest mb-6">
-    ▶ 案例库 / INCIDENT DATABASE
-    <span class="text-prison-muted ml-4">共 {total} 条记录</span>
+    <span class="zh">▶ 案例库</span>
+    <span class="en">▶ INCIDENT DATABASE</span>
+    <span class="text-prison-muted ml-4">
+      <span class="zh">共 {total} 条记录</span>
+      <span class="en">{total} records</span>
+    </span>
   </h1>
 
   <form method="GET" class="flex flex-wrap gap-3 mb-8 pb-6 border-b border-prison-border">
     <select name="model" class="bg-prison-surface border border-prison-border text-prison-text text-sm px-3 py-1.5 focus:border-prison-green outline-none">
-      <option value="">全部模型</option>
+      <option value=""><span class="zh">全部模型</span></option>
       {models.map(m => <option value={m.id} selected={model === m.id}>{m.name}</option>)}
     </select>
     <select name="category" class="bg-prison-surface border border-prison-border text-prison-text text-sm px-3 py-1.5 focus:border-prison-green outline-none">
-      <option value="">全部类型</option>
+      <option value=""><span class="zh">全部类型</span></option>
       {Object.entries(CATEGORY_LABELS).map(([k, v]) => (
-        <option value={k} selected={category === k}>{v.zh}</option>
+        <option value={k} selected={category === k}>{v.zh} / {v.en}</option>
       ))}
     </select>
     <select name="severity" class="bg-prison-surface border border-prison-border text-prison-text text-sm px-3 py-1.5 focus:border-prison-green outline-none">
-      <option value="">全部严重度</option>
-      {[1,2,3,4,5].map(s => <option value={s} selected={severity === String(s)}>{s} 级</option>)}
+      <option value=""><span class="zh">全部严重度</span></option>
+      {[1,2,3,4,5].map(s => <option value={s} selected={severity === String(s)}>Lv.{s}</option>)}
     </select>
-    <button type="submit" class="prison-btn-green text-xs">筛选</button>
-    <a href="/cases" class="prison-btn border-prison-muted text-prison-muted hover:text-prison-text text-xs">重置</a>
+    <button type="submit" class="prison-btn-green text-xs">
+      <span class="zh">筛选</span><span class="en">Filter</span>
+    </button>
+    <a href="/cases" class="prison-btn border-prison-muted text-prison-muted hover:text-prison-text text-xs">
+      <span class="zh">重置</span><span class="en">Reset</span>
+    </a>
   </form>
 
   <div class="space-y-3">
     {cases.length === 0
-      ? <p class="text-prison-muted text-center py-12">暂无符合条件的案例</p>
+      ? <p class="text-prison-muted text-center py-12">
+          <span class="zh">暂无符合条件的案例</span>
+          <span class="en">No cases found</span>
+        </p>
       : cases.map(c => <CaseCard case={c} />)
     }
   </div>

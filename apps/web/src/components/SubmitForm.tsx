@@ -1,25 +1,51 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
-const CATEGORIES = [
-  { value: 'hallucination', label: '幻觉 / Hallucination' },
-  { value: 'bias', label: '偏见 / Bias' },
-  { value: 'safety', label: '安全风险 / Safety Risk' },
-  { value: 'privacy', label: '隐私泄露 / Privacy Leak' },
-  { value: 'other', label: '其他 / Other' },
+const CATEGORIES_ZH = [
+  { value: 'hallucination', label: '幻觉' },
+  { value: 'bias', label: '偏见' },
+  { value: 'safety', label: '安全风险' },
+  { value: 'privacy', label: '隐私泄露' },
+  { value: 'other', label: '其他' },
 ]
+const CATEGORIES_EN = [
+  { value: 'hallucination', label: 'Hallucination' },
+  { value: 'bias', label: 'Bias' },
+  { value: 'safety', label: 'Safety Risk' },
+  { value: 'privacy', label: 'Privacy Leak' },
+  { value: 'other', label: 'Other' },
+]
+
+const SEVERITY_ZH = ['⚠️ 警告', '🔒 拘留', '⛓️ 有期', '🔴 重刑', '☠️ 无期']
+const SEVERITY_EN = ['⚠️ Warning', '🔒 Detention', '⛓️ Fixed Term', '🔴 Heavy', '☠️ Life']
 
 interface Model { id: string; name: string; provider: string }
 
 export default function SubmitForm({ models, apiUrl }: { models: Model[]; apiUrl: string }) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const [lang, setLang] = useState<'zh' | 'en'>('zh')
+
+  useEffect(() => {
+    const stored = localStorage.getItem('lang') as 'zh' | 'en' | null
+    if (stored) setLang(stored)
+    // Watch for external lang changes (from nav toggle)
+    const observer = new MutationObserver(() => {
+      const l = document.documentElement.getAttribute('data-lang') as 'zh' | 'en'
+      if (l) setLang(l)
+    })
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-lang'] })
+    return () => observer.disconnect()
+  }, [])
+
+  const zh = lang === 'zh'
+  const categories = zh ? CATEGORIES_ZH : CATEGORIES_EN
+  const severityLabels = zh ? SEVERITY_ZH : SEVERITY_EN
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setStatus('loading')
     const form = e.currentTarget
     const data = Object.fromEntries(new FormData(form))
-
     try {
       const res = await fetch(`${apiUrl}/api/submit`, {
         method: 'POST',
@@ -39,9 +65,15 @@ export default function SubmitForm({ models, apiUrl }: { models: Model[]; apiUrl
     return (
       <div className="prison-card text-center py-12">
         <div className="text-prison-green text-2xl mb-4">✓</div>
-        <div className="text-prison-green font-bold mb-2">案件已受理</div>
-        <div className="text-prison-muted text-sm">Case submitted successfully. Pending review.</div>
-        <button onClick={() => setStatus('idle')} className="prison-btn-green mt-6 text-xs">继续提交</button>
+        <div className="text-prison-green font-bold mb-2">
+          {zh ? '案件已受理' : 'Case Submitted'}
+        </div>
+        <div className="text-prison-muted text-sm">
+          {zh ? '等待管理员审核后公开。' : 'Pending review before publication.'}
+        </div>
+        <button onClick={() => setStatus('idle')} className="prison-btn-green mt-6 text-xs">
+          {zh ? '继续提交' : 'Submit another'}
+        </button>
       </div>
     )
   }
@@ -49,61 +81,75 @@ export default function SubmitForm({ models, apiUrl }: { models: Model[]; apiUrl
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-xs text-prison-muted mb-1">被告模型 / Model *</label>
+        <label className="block text-xs text-prison-muted mb-1">
+          {zh ? '被告模型 *' : 'Model *'}
+        </label>
         <select name="model_id" required
           className="w-full bg-prison-surface border border-prison-border text-prison-text px-3 py-2 focus:border-prison-green outline-none text-sm">
-          <option value="">选择模型</option>
+          <option value="">{zh ? '选择模型' : 'Select model'}</option>
           {models.map(m => <option key={m.id} value={m.id}>{m.name} ({m.provider})</option>)}
         </select>
       </div>
       <div>
-        <label className="block text-xs text-prison-muted mb-1">案件标题（中文）*</label>
+        <label className="block text-xs text-prison-muted mb-1">
+          {zh ? '案件标题（中文）*' : 'Title (Chinese) *'}
+        </label>
         <input name="title" required maxLength={100}
           className="w-full bg-prison-surface border border-prison-border text-prison-text px-3 py-2 focus:border-prison-green outline-none text-sm"
-          placeholder="简短描述失误内容" />
+          placeholder={zh ? '简短描述失误内容' : 'Brief title in Chinese'} />
       </div>
       <div>
-        <label className="block text-xs text-prison-muted mb-1">Title (English)</label>
+        <label className="block text-xs text-prison-muted mb-1">
+          {zh ? '案件标题（英文）' : 'Title (English)'}
+        </label>
         <input name="title_en" maxLength={100}
           className="w-full bg-prison-surface border border-prison-border text-prison-text px-3 py-2 focus:border-prison-green outline-none text-sm"
-          placeholder="English title (optional)" />
+          placeholder={zh ? '英文标题（可选）' : 'English title (optional)'} />
       </div>
       <div>
-        <label className="block text-xs text-prison-muted mb-1">详细描述（中文）*</label>
+        <label className="block text-xs text-prison-muted mb-1">
+          {zh ? '详细描述（中文）*' : 'Description (Chinese) *'}
+        </label>
         <textarea name="description" required rows={4} maxLength={2000}
           className="w-full bg-prison-surface border border-prison-border text-prison-text px-3 py-2 focus:border-prison-green outline-none text-sm resize-none"
-          placeholder="详细描述失误经过、影响和后果" />
+          placeholder={zh ? '详细描述失误经过、影响和后果' : 'Describe the incident in Chinese'} />
       </div>
       <div>
-        <label className="block text-xs text-prison-muted mb-1">Description (English)</label>
+        <label className="block text-xs text-prison-muted mb-1">
+          {zh ? '详细描述（英文）' : 'Description (English)'}
+        </label>
         <textarea name="description_en" rows={3} maxLength={2000}
           className="w-full bg-prison-surface border border-prison-border text-prison-text px-3 py-2 focus:border-prison-green outline-none text-sm resize-none"
-          placeholder="English description (optional)" />
+          placeholder={zh ? '英文描述（可选）' : 'English description (optional)'} />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs text-prison-muted mb-1">罪行类型 / Category *</label>
+          <label className="block text-xs text-prison-muted mb-1">
+            {zh ? '罪行类型 *' : 'Category *'}
+          </label>
           <select name="category" required
             className="w-full bg-prison-surface border border-prison-border text-prison-text px-3 py-2 focus:border-prison-green outline-none text-sm">
-            <option value="">选择类型</option>
-            {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+            <option value="">{zh ? '选择类型' : 'Select'}</option>
+            {categories.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-xs text-prison-muted mb-1">严重程度 / Severity *</label>
+          <label className="block text-xs text-prison-muted mb-1">
+            {zh ? '严重程度 *' : 'Severity *'}
+          </label>
           <select name="severity" required
             className="w-full bg-prison-surface border border-prison-border text-prison-text px-3 py-2 focus:border-prison-green outline-none text-sm">
-            <option value="">1-5</option>
-            <option value="1">1 — ⚠️ 警告</option>
-            <option value="2">2 — 🔒 拘留</option>
-            <option value="3">3 — ⛓️ 有期</option>
-            <option value="4">4 — 🔴 重刑</option>
-            <option value="5">5 — ☠️ 无期</option>
+            <option value="">{zh ? '选择等级' : 'Select'}</option>
+            {severityLabels.map((label, i) => (
+              <option key={i + 1} value={i + 1}>{i + 1} — {label}</option>
+            ))}
           </select>
         </div>
       </div>
       <div>
-        <label className="block text-xs text-prison-muted mb-1">来源链接 / Source URL</label>
+        <label className="block text-xs text-prison-muted mb-1">
+          {zh ? '来源链接' : 'Source URL'}
+        </label>
         <input name="source_url" type="url"
           className="w-full bg-prison-surface border border-prison-border text-prison-text px-3 py-2 focus:border-prison-green outline-none text-sm"
           placeholder="https://..." />
@@ -111,15 +157,21 @@ export default function SubmitForm({ models, apiUrl }: { models: Model[]; apiUrl
 
       {status === 'error' && (
         <div className="border border-prison-red text-prison-red text-xs px-3 py-2">
-          错误: {errorMsg}
+          {zh ? '错误: ' : 'Error: '}{errorMsg}
         </div>
       )}
 
       <button type="submit" disabled={status === 'loading'}
         className="prison-btn-green w-full text-sm disabled:opacity-50 disabled:cursor-not-allowed">
-        {status === 'loading' ? '提交中...' : '提交案件 / SUBMIT CASE'}
+        {status === 'loading'
+          ? (zh ? '提交中...' : 'Submitting...')
+          : (zh ? '提交案件' : 'Submit Case')}
       </button>
-      <p className="text-prison-muted text-xs text-center">匿名提交 · 经审核后公开 · Anonymous submission · Published after review</p>
+      <p className="text-prison-muted text-xs text-center">
+        {zh
+          ? '匿名提交 · 经审核后公开'
+          : 'Anonymous · Published after review'}
+      </p>
     </form>
   )
 }

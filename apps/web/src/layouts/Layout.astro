@@ -14,24 +14,59 @@ const { title = 'AI PRISON', description = 'AI 问责与透明度平台 — 收�
   <meta name="description" content={description} />
   <title>{title} | AI PRISON</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <!-- Apply lang before paint to avoid flash -->
+  <script is:inline>
+    (function() {
+      var lang = localStorage.getItem('lang') || 'zh';
+      document.documentElement.setAttribute('data-lang', lang);
+    })();
+  </script>
 </head>
 <body class="bg-prison-bg text-prison-text font-mono min-h-screen">
   <nav class="border-b border-prison-border px-6 py-3 flex items-center justify-between">
     <a href="/" class="text-prison-green font-bold text-lg tracking-widest hover:animate-flicker">
       ⛓ AI PRISON
     </a>
-    <div class="flex gap-6 text-sm text-prison-muted">
-      <a href="/cases" class="hover:text-prison-green transition-colors">案例库 / CASES</a>
-      <a href="/rankings" class="hover:text-prison-green transition-colors">排行榜 / RANKINGS</a>
-      <a href="/submit" class="hover:text-prison-green transition-colors">举报 / REPORT</a>
+    <div class="flex items-center gap-6 text-sm text-prison-muted">
+      <a href="/cases" class="hover:text-prison-green transition-colors">
+        <span class="zh">案例库</span><span class="en">Cases</span>
+      </a>
+      <a href="/rankings" class="hover:text-prison-green transition-colors">
+        <span class="zh">排行榜</span><span class="en">Rankings</span>
+      </a>
+      <a href="/submit" class="hover:text-prison-green transition-colors">
+        <span class="zh">举报</span><span class="en">Report</span>
+      </a>
+      <!-- Language toggle -->
+      <button id="lang-toggle"
+        class="border border-prison-border text-prison-muted text-xs px-2 py-1 hover:border-prison-green hover:text-prison-green transition-colors">
+        <span class="zh">EN</span><span class="en">中文</span>
+      </button>
     </div>
   </nav>
+
   <main class="max-w-6xl mx-auto px-6 py-8">
     <slot />
   </main>
+
   <footer class="border-t border-prison-border px-6 py-4 text-center text-prison-muted text-xs mt-12">
-    AI PRISON — 记录 AI 的每一次失误 | Documenting every AI failure
+    <span class="zh">AI PRISON — 记录 AI 的每一次失误</span>
+    <span class="en">AI PRISON — Documenting every AI failure</span>
     <span class="ml-4 opacity-50">v0.1.0</span>
   </footer>
+
+  <script>
+    const toggle = document.getElementById('lang-toggle')!
+    function getLang() { return localStorage.getItem('lang') || 'zh' }
+    function setLang(lang: string) {
+      localStorage.setItem('lang', lang)
+      document.documentElement.setAttribute('data-lang', lang)
+    }
+    // Init
+    setLang(getLang())
+    toggle.addEventListener('click', () => {
+      setLang(getLang() === 'zh' ? 'en' : 'zh')
+    })
+  </script>
 </body>
 </html>

@@ -1,0 +1,37 @@
+---
+import '../styles/global.css'
+export interface Props {
+  title?: string
+  description?: string
+}
+const { title = 'AI PRISON', description = 'AI 问责与透明度平台 — 收录各大 AI 模型失误案例，公开服刑记录' } = Astro.props
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={description} />
+  <title>{title} | AI PRISON</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+</head>
+<body class="bg-prison-bg text-prison-text font-mono min-h-screen">
+  <nav class="border-b border-prison-border px-6 py-3 flex items-center justify-between">
+    <a href="/" class="text-prison-green font-bold text-lg tracking-widest hover:animate-flicker">
+      ⛓ AI PRISON
+    </a>
+    <div class="flex gap-6 text-sm text-prison-muted">
+      <a href="/cases" class="hover:text-prison-green transition-colors">案例库 / CASES</a>
+      <a href="/rankings" class="hover:text-prison-green transition-colors">排行榜 / RANKINGS</a>
+      <a href="/submit" class="hover:text-prison-green transition-colors">举报 / REPORT</a>
+    </div>
+  </nav>
+  <main class="max-w-6xl mx-auto px-6 py-8">
+    <slot />
+  </main>
+  <footer class="border-t border-prison-border px-6 py-4 text-center text-prison-muted text-xs mt-12">
+    AI PRISON — 记录 AI 的每一次失误 | Documenting every AI failure
+    <span class="ml-4 opacity-50">v0.1.0</span>
+  </footer>
+</body>
+</html>

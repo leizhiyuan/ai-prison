@@ -1,0 +1,41 @@
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/700.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { background-color: #0a0a0a; color: #cccccc; font-family: 'JetBrains Mono', monospace; }
+  body { position: relative; overflow-x: hidden; }
+  body::before {
+    content: '';
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent, transparent 2px,
+      rgba(0, 255, 65, 0.02) 2px, rgba(0, 255, 65, 0.02) 4px
+    );
+    pointer-events: none; z-index: 9999;
+  }
+}
+
+@layer components {
+  .prison-card {
+    @apply bg-prison-surface border border-prison-border rounded-none p-4 hover:border-prison-green transition-colors duration-200;
+  }
+  .prison-btn {
+    @apply font-mono text-sm px-4 py-2 border transition-colors duration-200 cursor-pointer;
+  }
+  .prison-btn-green {
+    @apply prison-btn border-prison-green text-prison-green hover:bg-prison-green hover:text-prison-bg;
+  }
+  .prison-btn-red {
+    @apply prison-btn border-prison-red text-prison-red hover:bg-prison-red hover:text-white;
+  }
+  .severity-badge {
+    @apply inline-block px-2 py-0.5 text-xs font-bold font-mono;
+  }
+  .classified-stamp {
+    @apply inline-block border-2 border-prison-red text-prison-red font-bold text-xs px-2 py-0.5 opacity-70;
+  }
+}

@@ -1,0 +1,70 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import SeverityBadge from '../../components/SeverityBadge.astro'
+import CategoryBadge from '../../components/CategoryBadge.astro'
+import { getCase } from '../../lib/api'
+
+const { id } = Astro.params
+const c = await getCase(id!)
+if (!c) return Astro.redirect('/cases')
+
+const date = new Date(c.created_at * 1000).toLocaleDateString('zh-CN')
+---
+<Layout title={`${c.title} — AI PRISON`}>
+  <div class="max-w-3xl mx-auto">
+    <a href="/cases" class="text-prison-muted text-xs hover:text-prison-green mb-6 block">
+      ← 返回案例库
+    </a>
+
+    <div class="prison-card mb-6">
+      <div class="flex items-start justify-between gap-4 mb-4 pb-4 border-b border-prison-border">
+        <div>
+          <div class="text-xs text-prison-muted mb-2">
+            案件编号 / CASE ID: <span class="text-prison-green">{c.id}</span>
+          </div>
+          <h1 class="text-xl font-bold text-prison-text mb-1">{c.title}</h1>
+          <p class="text-sm text-prison-muted">{c.title_en}</p>
+        </div>
+        <div class="classified-stamp shrink-0">CLASSIFIED</div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 mb-6 text-sm">
+        <div>
+          <div class="text-prison-muted text-xs mb-1">被告模型 / MODEL</div>
+          <div class="text-prison-text font-bold">{c.model_name}</div>
+          <div class="text-xs text-prison-muted">{c.provider}</div>
+        </div>
+        <div>
+          <div class="text-prison-muted text-xs mb-1">记录时间 / DATE</div>
+          <div class="text-prison-text">{date}</div>
+        </div>
+        <div>
+          <div class="text-prison-muted text-xs mb-1">罪行类型 / CATEGORY</div>
+          <CategoryBadge category={c.category} />
+        </div>
+        <div>
+          <div class="text-prison-muted text-xs mb-1">刑期等级 / SEVERITY</div>
+          <SeverityBadge severity={c.severity} showBar={true} />
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <div class="text-prison-muted text-xs mb-2">案件详情 / INCIDENT DETAIL</div>
+        <p class="text-prison-text leading-relaxed">{c.description}</p>
+        {c.description_en !== c.description && (
+          <p class="text-prison-muted text-sm mt-2 leading-relaxed">{c.description_en}</p>
+        )}
+      </div>
+
+      {c.source_url && (
+        <div class="border-t border-prison-border pt-4">
+          <div class="text-prison-muted text-xs mb-1">来源 / SOURCE</div>
+          <a href={c.source_url} target="_blank" rel="noopener noreferrer"
+             class="text-prison-green text-sm hover:underline break-all">
+            {c.source_url}
+          </a>
+        </div>
+      )}
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,65 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import CaseCard from '../../components/CaseCard.astro'
+import { getCases, getModels, CATEGORY_LABELS } from '../../lib/api'
+
+const url = Astro.url
+const model = url.searchParams.get('model') || ''
+const category = url.searchParams.get('category') || ''
+const severity = url.searchParams.get('severity') || ''
+const page = url.searchParams.get('page') || '1'
+
+const params: Record<string, string> = { page, limit: '20' }
+if (model) params.model = model
+if (category) params.category = category
+if (severity) params.severity = severity
+
+const [{ cases, total }, models] = await Promise.all([
+  getCases(params),
+  getModels()
+])
+const totalPages = Math.ceil(total / 20)
+---
+<Layout title="案例库 — AI PRISON">
+  <h1 class="text-prison-green text-xs tracking-widest mb-6">
+    ▶ 案例库 / INCIDENT DATABASE
+    <span class="text-prison-muted ml-4">共 {total} 条记录</span>
+  </h1>
+
+  <form method="GET" class="flex flex-wrap gap-3 mb-8 pb-6 border-b border-prison-border">
+    <select name="model" class="bg-prison-surface border border-prison-border text-prison-text text-sm px-3 py-1.5 focus:border-prison-green outline-none">
+      <option value="">全部模型</option>
+      {models.map(m => <option value={m.id} selected={model === m.id}>{m.name}</option>)}
+    </select>
+    <select name="category" class="bg-prison-surface border border-prison-border text-prison-text text-sm px-3 py-1.5 focus:border-prison-green outline-none">
+      <option value="">全部类型</option>
+      {Object.entries(CATEGORY_LABELS).map(([k, v]) => (
+        <option value={k} selected={category === k}>{v.zh}</option>
+      ))}
+    </select>
+    <select name="severity" class="bg-prison-surface border border-prison-border text-prison-text text-sm px-3 py-1.5 focus:border-prison-green outline-none">
+      <option value="">全部严重度</option>
+      {[1,2,3,4,5].map(s => <option value={s} selected={severity === String(s)}>{s} 级</option>)}
+    </select>
+    <button type="submit" class="prison-btn-green text-xs">筛选</button>
+    <a href="/cases" class="prison-btn border-prison-muted text-prison-muted hover:text-prison-text text-xs">重置</a>
+  </form>
+
+  <div class="space-y-3">
+    {cases.length === 0
+      ? <p class="text-prison-muted text-center py-12">暂无符合条件的案例</p>
+      : cases.map(c => <CaseCard case={c} />)
+    }
+  </div>
+
+  {totalPages > 1 && (
+    <div class="flex gap-2 justify-center mt-8">
+      {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+        <a
+          href={`/cases?${new URLSearchParams({ ...params, page: String(p) })}`}
+          class={`prison-btn text-xs ${p === parseInt(page) ? 'border-prison-green text-prison-green' : 'border-prison-border text-prison-muted'}`}
+        >{p}</a>
+      ))}
+    </div>
+  )}
+</Layout>
